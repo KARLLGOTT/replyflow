@@ -22,7 +22,7 @@ import aiofiles
 import PyPDF2
 from docx import Document
 import openpyxl
-from lingua import Language, LanguageDetectorBuilder
+from langdetect import detect
 from fastapi.responses import StreamingResponse
 from app.utils.logger import log_error, log_info, log_warning
 from app.utils.telegram import send_telegram_message_sync
@@ -310,17 +310,13 @@ def get_detector():
 
 def detect_language(text: str) -> str:
     try:
-        detector = get_detector()
-        lang = detector.detect_language_of(text)
-        if lang == Language.UKRAINIAN:
+        lang = detect(text)
+        if lang == 'uk':
             return 'uk'
-        elif lang == Language.ENGLISH:
-            return 'en'
         else:
-            return 'uk'
+            return 'en'
     except Exception:
         return 'uk'
-
 
 # ===== Groq клиент =====
 groq_client = None
