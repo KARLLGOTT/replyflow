@@ -1,0 +1,355 @@
+body {
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#7c3aed,#ec4899);
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100vh;
+  gap: 20px;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+/* Верхний блок */
+.top-panel {
+  display: flex;
+  width: 100vw; /* растягиваем на всю ширину экрана */
+  margin-left: calc(-50vw + 53%); /* компенсируем центрирование container */
+  padding-left:20px;
+  padding-right:20px;
+}
+
+/* Левая панель */
+.left-panel {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-right:10px;
+}
+
+/* Правая панель */
+.right-panel {
+  flex: 0 0 40%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-left:10px;
+  padding-top:13px;
+  min-width: 250px; /* минимальная ширина */
+  max-width: 500px; /* максимальная ширина */
+}
+
+/* Inputs */
+.input-textarea,
+.input-text {
+  width: 100%;
+  padding: 11px;
+  border-radius: 8px;
+  border: 1px solid #d6d6d6;
+  font-size: 16px;
+  transition: all 0.2s;
+}
+
+.input-textarea:focus,
+.input-text:focus {
+  border-color:#9f7aea;
+  outline:none;
+  box-shadow:0 0 0 2px rgba(159,122,234,0.2);
+}
+
+/* Buttons */
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 12px; 
+}
+
+.main-button {
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:0.7em 1.2em;
+  border-radius:8px;
+  border:none;
+  cursor:pointer;
+  font-weight:bold;
+  font-size:0.95rem;
+  line-height:1;
+  transition:0.25s;
+  background:linear-gradient(135deg,#7c3aed,#ec4899);
+  color:white;
+}
+
+.main-button:hover {
+  transform: translateY(-1px);
+  box-shadow:0 6px 14px rgba(0,0,0,0.2);
+}
+
+/* Chat container */
+.chat-container {
+  flex: 1 1 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  /*border-top: 1px solid #eee;*/
+  padding-top: 12px;
+}
+
+/* Chat message */
+.chat-message {
+  width: 100%;
+}
+
+.chat-message.user {
+  align-self: flex-start;
+}
+
+.chat-label{
+  font-size:13px;
+  font-weight:bold;
+  margin-bottom:4px;
+}
+
+.chat-bubble{
+  padding:12px 18px;
+  border-radius:16px;
+  background:white;
+  box-shadow:0 4px 10px rgba(0,0,0,0.15);
+  max-width:70%;
+  line-height:1.4;
+  word-break:break-word;
+}
+
+.chat-message.user .chat-bubble {
+  background: #e9d5ff;
+  border-top-left-radius: 0;
+}
+
+/* Responses */
+.responses {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.responses .card {
+  flex: 1 1 30%;
+  min-width: 250px;
+  max-width: 400px;
+  box-sizing: border-box;
+  border: 2px solid #e2e2e2;
+  padding: 16px;
+  position: relative;
+  border-radius: 12px;
+  background-color: #fafafa;
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 18px rgba(0,0,0,0.18);
+  border-color: #9f7aea;
+}
+
+.card.highlight {
+  border-color: #ec4899;
+  background: #fafafa;
+}
+
+/* Copy button */
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 4px 9px;
+  cursor: pointer;
+  border: 2px solid #7c3aed;
+  background-color: #f3e8ff;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 13px;
+  transition: 0.2s;
+}
+
+.copy-btn:hover {
+  background-color: #7c3aed;
+  color: #fff;
+}
+
+/* Improved answer */
+.improved-answer {
+  background: linear-gradient(135deg,#faf5ff,#fdf2ff);
+  color: #222;
+  backdrop-filter: blur(10px);
+  padding: 18px;
+  border-radius: 14px;
+  margin-top: 12px;
+  max-width: 600px;
+  position: relative;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  border:1px solid #eee;
+}
+
+.best-badge{
+  background:#ec4899;
+  color:white;
+  font-size:12px;
+  padding:2px 6px;
+  border-radius:6px;
+  margin-left:6px;
+}
+
+.back-btn{
+	width:30%;
+}
+
+/* Правая панель */
+.right-panel {
+  flex: 1; /* занимает доступное место */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-left: 10px;
+  min-width: 250px; /* минимальная ширина */
+  max-width: 500px; /* максимальная ширина */
+}
+
+/* Блок кнопок */
+.right-panel .buttons {
+  display: flex;
+  gap: 10px; /* расстояние между кнопками */
+  flex-wrap: wrap; /* на маленьких экранах кнопки могут переноситься */
+}
+
+/* Кнопки внутри правой панели */
+.right-panel .main-button {
+  flex: 1; /* резиновая ширина, делится между кнопками */
+  padding: 10px 0; /* вертикальные отступы */
+  font-size: 16px;
+  min-width: 100px; /* минимальный размер кнопки */
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* Опционально: отдельный стиль для кнопки Очистити */
+.right-panel .clear-btn {
+  background-color: #f87171; /* красная для очистки */
+  color: white;
+}
+
+.right-panel .main-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Текстовое поле */
+.right-panel .input-textarea {
+  width: 100%;
+  resize: vertical; /* можно менять высоту, но не ширину */
+  padding: 10px;
+  font-size: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+/* Карточка с ответом */
+.right-panel .card.improved-answer {
+  padding: 12px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+
+.right-panel .copy-btn {
+  /*margin-top: 8px;*/
+  padding: 1px 12px;
+  font-size: 14px;
+  border-radius: 6px;
+  /*background-color: #3b82f6;*/
+  /*color: white;*/
+  cursor: pointer;
+  border: none;
+  border: 2px solid #7c3aed;
+  background-color: #f3e8ff;
+}
+
+/* ===== ДОПОЛНИТЕЛЬНЫЕ АНИМАЦИИ ===== */
+
+/* Анимация пульсации при наведении */
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.05); opacity: 0.9; }
+}
+
+.pulse-hover:hover {
+  animation: pulse 0.5s ease-in-out;
+}
+
+/* Анимация появления */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.slide-in {
+  animation: slideIn 0.3s ease-out;
+}
+
+/* Эффект стекла при наведении */
+.glass-hover {
+  transition: all 0.3s ease;
+}
+.glass-hover:hover {
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Дополнительные ховер эффекты для карточек */
+.card-hover {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2), 0 10px 10px -5px rgba(0, 0, 0, 0.1);
+  border-color: #9f7aea;
+}
+
+/* Эффект свечения для кнопок */
+.glow-hover:hover {
+  box-shadow: 0 0 15px rgba(236, 72, 153, 0.6);
+}
+
+/* Анимация для копирования */
+@keyframes copyFlash {
+  0% { transform: scale(1); background: #f3e8ff; }
+  50% { transform: scale(1.1); background: #9f7aea; color: white; }
+  100% { transform: scale(1); background: #f3e8ff; }
+}
+
+.copy-flash {
+  animation: copyFlash 0.3s ease-out;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-pulse {
+  animation: blink 1s step-end infinite;
+}

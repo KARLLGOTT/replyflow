@@ -1,0 +1,15 @@
+/* styles.css - injected into page */
+.replyflow-copy-btn {
+  background: rgba(255,255,255,0.2);
+  border: none;
+  border-radius: 4px;
+  padding: 2px 8px;
+  color: white;
+  cursor: pointer;
+  font-size: 11px;
+  transition: background 0.2s;
+}
+
+.replyflow-copy-btn:hover {
+  background: rgba(255,255,255,0.4);
+}

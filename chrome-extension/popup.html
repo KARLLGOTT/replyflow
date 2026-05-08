@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body {
+      width: 320px;
+      padding: 16px;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #7c3aed, #ec4899);
+      color: white;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    h1 {
+      font-size: 18px;
+      margin: 0;
+      text-align: center;
+    }
+    input, textarea {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: none;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      font-size: 14px;
+    }
+    input::placeholder, textarea::placeholder {
+      color: rgba(255,255,255,0.6);
+    }
+    button {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: white;
+      color: #7c3aed;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    button:hover {
+      transform: scale(1.02);
+    }
+    .status {
+      font-size: 12px;
+      text-align: center;
+      margin-top: 8px;
+      opacity: 0.8;
+    }
+    .response-card {
+      background: rgba(255,255,255,0.15);
+      border-radius: 8px;
+      padding: 10px;
+      margin-top: 8px;
+      position: relative;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      padding: 2px 8px;
+      font-size: 11px;
+      background: rgba(255,255,255,0.3);
+      color: white;
+    }
+    hr {
+      border-color: rgba(255,255,255,0.2);
+      margin: 8px 0;
+    }
+    .api-status {
+      font-size: 11px;
+      text-align: center;
+      padding: 4px;
+      border-radius: 4px;
+      background: rgba(0,0,0,0.3);
+    }
+    .api-status.error {
+      background: rgba(255,0,0,0.3);
+    }
+    .api-status.success {
+      background: rgba(0,255,0,0.3);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🤖 ReplyFlow AI</h1>
+    
+    <div class="api-status" id="apiStatus">
+      ⚙️ API Key not configured
+    </div>
+    
+    <input type="password" id="apiKey" placeholder="Enter your API key" />
+    <button id="saveKey">Save API Key</button>
+    
+    <hr />
+    
+    <textarea id="question" rows="3" placeholder="Paste customer question here..."></textarea>
+    <button id="generateBtn">✨ Generate Response</button>
+    
+    <div id="responses"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
