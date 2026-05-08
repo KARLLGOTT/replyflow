@@ -25,3 +25,4 @@ openai
 tavily-python
 aiosqlite
 asyncpg
+python-multipart
