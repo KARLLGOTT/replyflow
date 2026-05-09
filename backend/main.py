@@ -54,7 +54,7 @@ from app.utils.redis_client import (
 from app.utils.model_balancer import select_model, record_model_result
 
 # ===== Celery =====
-# from app.tasks import celery_app, generate_response_task, get_task_result, save_task_result
+from app.tasks import celery_app, generate_response_task, get_task_result, save_task_result
 
 # ===== Контроль стоимости =====
 from app.utils.cost_manager import (
@@ -1377,7 +1377,6 @@ async def generate_stream(
         }
     )
 
-"""
 # ===== АСИНХРОННАЯ ГЕНЕРАЦИЯ =====
 @app.post("/generate-async")
 async def generate_async(
@@ -1417,7 +1416,6 @@ async def get_task_status(task_id: str):
         "result": result.get("result") if result.get("status") == "completed" else None,
         "error": result.get("error") if result.get("status") == "failed" else None
     }
-"""
 
 # ===== УЛУЧШЕНИЕ ОТВЕТА =====
 @app.post("/improve-answer")
