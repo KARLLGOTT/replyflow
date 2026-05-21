@@ -28,7 +28,7 @@ class Config:
     REFRESH_TOKEN_EXPIRE_DAYS: int = int(os.getenv("REFRESH_TOKEN_EXPIRE_DAYS", "30"))
     
     # ===== CORS =====
-    CORS_ORIGINS: list = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,http://localhost:5173").split(",")
+    CORS_ORIGINS: list = os.getenv("CORS_ORIGINS", "http://localhost:3000,http://127.0.0.1:3000,https://replyflow-jmaj4f8mq-karllgott-s-projects.vercel.app").split(",")
     
     # ===== EMAIL =====
     EMAIL_ADDRESS: str = os.getenv("EMAIL_ADDRESS", "")
