@@ -17,7 +17,7 @@ class Config:
     DATABASE_MAX_OVERFLOW: int = int(os.getenv("DATABASE_MAX_OVERFLOW", "10"))
     
     # ===== REDIS =====
-    REDIS_URL: str = os.getenv("REDIS_URL", "redis://localhost:6379/0")
+    REDIS_URL: str = os.getenv("REDIS_URL")
     REDIS_SESSION_TTL: int = int(os.getenv("REDIS_SESSION_TTL", "3600"))  # 1 час
     REDIS_CACHE_TTL: int = int(os.getenv("REDIS_CACHE_TTL", "300"))  # 5 минут
     
