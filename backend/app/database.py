@@ -1,21 +1,36 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
-from app.config import config
 import os
 
-DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://user:pass@localhost/dbname")
+# Берём базу данных из переменной окружения (которую создал Render)
+# Если переменной нет — используем старый config (на случай локальной разработки)
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-if "postgresql" in config.DATABASE_URL:
+if not DATABASE_URL:
+    # fallback для локальной разработки (чтобы код не сломался)
+    from app.config import config
+    DATABASE_URL = config.DATABASE_URL
+    pool_size = getattr(config, "DATABASE_POOL_SIZE", 5)
+    max_overflow = getattr(config, "DATABASE_MAX_OVERFLOW", 10)
+    debug = getattr(config, "DEBUG", False)
+else:
+    # значения по умолчанию для Render
+    pool_size = 5
+    max_overflow = 10
+    debug = False
+
+# Создаём engine
+if "postgresql" in DATABASE_URL:
     engine = create_engine(
-        config.DATABASE_URL,
-        pool_size=config.DATABASE_POOL_SIZE,
-        max_overflow=config.DATABASE_MAX_OVERFLOW,
+        DATABASE_URL,
+        pool_size=pool_size,
+        max_overflow=max_overflow,
         pool_pre_ping=True,
-        echo=config.DEBUG
+        echo=debug
     )
 else:
     engine = create_engine(
-        config.DATABASE_URL,
+        DATABASE_URL,
         connect_args={"check_same_thread": False}
     )
 
