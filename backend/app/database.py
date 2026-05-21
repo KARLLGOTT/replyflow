@@ -1,6 +1,9 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 from app.config import config
+import os
+
+DATABASE_URL = os.environ.get("DATABASE_URL", "postgresql://user:pass@localhost/dbname")
 
 if "postgresql" in config.DATABASE_URL:
     engine = create_engine(
