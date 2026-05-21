@@ -10,7 +10,9 @@ class Config:
     """Центральный конфигурационный файл проекта"""
     
     # ===== БАЗА ДАННЫХ =====
-    DATABASE_URL: str = os.getenv("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432/replyflow")
+    DATABASE_URL = os.environ.get("DATABASE_URL")
+    if not DATABASE_URL:
+        DATABASE_URL = "postgresql://user:pass@localhost/dbname"
     DATABASE_POOL_SIZE: int = int(os.getenv("DATABASE_POOL_SIZE", "20"))
     DATABASE_MAX_OVERFLOW: int = int(os.getenv("DATABASE_MAX_OVERFLOW", "10"))
     
