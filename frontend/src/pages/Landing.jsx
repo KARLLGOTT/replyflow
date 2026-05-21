@@ -74,7 +74,7 @@ export default function Landing() {
   useEffect(() => {
     const checkDemoRemaining = async () => {
       try {
-        const res = await fetch("https://replyflow-production-313e.up.railway.app/demo-remaining");
+        const res = await fetch("https://replyflow-bot.onrender.com/demo-remaining");
         const data = await res.json();
         setRemaining(data.remaining);
         if (data.remaining <= 0) {
@@ -117,7 +117,7 @@ export default function Landing() {
 
     setLoading(true);
     try {
-      const res = await fetch("https://replyflow-production-313e.up.railway.app/demo-generate", {
+      const res = await fetch("https://replyflow-bot.onrender.com/demo-generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: message, session_id: sessionId }),
@@ -168,7 +168,7 @@ export default function Landing() {
         headers["Authorization"] = `Bearer ${token}`;
       }
       
-      const res = await fetch("https://replyflow-production-313e.up.railway.app/send-email", {
+      const res = await fetch("https://https://replyflow-bot.onrender.com/send-email", {
         method: "POST",
         headers: headers,
         credentials: "include",
