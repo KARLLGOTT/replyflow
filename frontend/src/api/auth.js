@@ -1,4 +1,4 @@
-const API_URL = "/api/users";
+const API_URL = "https://replyflow-bot.onrender.com/api/users";
 
 let isRefreshing = false;
 let failedQueue = [];
