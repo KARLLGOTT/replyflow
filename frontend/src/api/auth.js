@@ -103,27 +103,28 @@ export const authAPI = {
   },
 
   login: async (email, password) => {
-    const formData = new URLSearchParams();
-    formData.append("username", email);
-    formData.append("password", password);
+  const formData = new URLSearchParams();
+  formData.append("username", email);
+  formData.append("password", password);
 
-    const res = await fetch(`${API_URL}/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: formData,
-      credentials: "include",
-    });
+  const res = await fetch("https://replyflow-bot.onrender.com/api/users/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: formData,
+    credentials: "include",
+  });
 
-    if (!res.ok) {
-      const error = await res.json().catch(() => null);
-      throw new Error(error?.detail || "Ошибка входа");
-    }
+  if (!res.ok) {
+    const error = await res.json().catch(() => null);
+    throw new Error(error?.detail || "Ошибка входа");
+  }
 
-    const data = await res.json();
-    localStorage.setItem("accessToken", data.access_token);
-    authAPI.startTokenRefreshTimer();
-    return data;
-  },
+  const data = await res.json();
+  localStorage.setItem("accessToken", data.access_token);
+  return data;
+},
 
   getCurrentUser: async () => {
     const token = localStorage.getItem("accessToken");
