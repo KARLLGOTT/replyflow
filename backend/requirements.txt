@@ -29,3 +29,4 @@ python-multipart
 lingua-language-detector>=2.0.0
 celery
 redis
+bcrypt
