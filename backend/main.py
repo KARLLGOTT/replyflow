@@ -1541,21 +1541,49 @@ async def send_email(
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 """
         
-        msg = MIMEText(email_content, "plain", "utf-8")
-        msg["Subject"] = Header(f"Новый отзыв с ReplyFlow AI", "utf-8")
-        msg["From"] = config.EMAIL_ADDRESS
-        msg["To"] = config.EMAIL_ADDRESS
-        
-        server = smtplib.SMTP_SSL(config.EMAIL_SMTP_HOST, config.EMAIL_SMTP_PORT)
-        server.login(config.EMAIL_ADDRESS, config.EMAIL_PASSWORD)
-        server.send_message(msg)
-        server.quit()
-        
-        return {"status": "success", "message": "Спасибо за отзыв!"}
+        # Пытаемся отправить через SMTP
+        try:
+            msg = MIMEText(email_content, "plain", "utf-8")
+            msg["Subject"] = Header(f"Новый отзыв с ReplyFlow AI", "utf-8")
+            msg["From"] = config.EMAIL_ADDRESS
+            msg["To"] = config.EMAIL_ADDRESS
+            
+            server = smtplib.SMTP_SSL(config.EMAIL_SMTP_HOST, config.EMAIL_SMTP_PORT)
+            server.login(config.EMAIL_ADDRESS, config.EMAIL_PASSWORD)
+            server.send_message(msg)
+            server.quit()
+            
+            return {"status": "success", "message": "Спасибо за отзыв!"}
+        except Exception as smtp_error:
+            # Если SMTP не работает — пробуем отправить через Mailgun API
+            print(f"SMTP failed: {smtp_error}, trying Mailgun API...")
+            
+            api_key = os.environ.get("MAILGUN_API_KEY")
+            if not api_key:
+                raise Exception("Mailgun API key not configured")
+            
+            domain = "sandbox95ed721e2bf445488e3a9c910019da16.mailgun.org"
+            
+            import requests
+            response = requests.post(
+                f"https://api.mailgun.net/v3/{domain}/messages",
+                auth=("api", api_key),
+                data={
+                    "from": f"ReplyFlow Bot <postmaster@{domain}>",
+                    "to": [config.EMAIL_ADDRESS],  # отправляем на твой email
+                    "subject": "Новое сообщение с сайта",
+                    "text": email_content
+                }
+            )
+            
+            if response.status_code == 200:
+                return {"status": "success", "message": "Спасибо за отзыв!"}
+            else:
+                raise Exception(f"Mailgun API error: {response.text}")
+                
     except Exception as e:
         print(f"Ошибка отправки email: {e}")
         return {"status": "error", "message": str(e)}
-
 
 # ===== ВЕБХУК ДЛЯ ОПЛАТЫ =====
 @app.post("/api/webhooks/payment")
