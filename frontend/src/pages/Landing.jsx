@@ -168,7 +168,7 @@ export default function Landing() {
         headers["Authorization"] = `Bearer ${token}`;
       }
       
-      const res = await fetch("https://https://replyflow-bot.onrender.com/send-email", {
+      const res = await fetch("https://replyflow-bot.onrender.com/send-email", {
         method: "POST",
         headers: headers,
         credentials: "include",
