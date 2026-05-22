@@ -279,7 +279,7 @@ def startup_event():
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://replyflow-bvmp3v8t8-karllgott-s-projects.vercel.app",
+        "https://classy-vacherin-53dad1.netlify.app",
         "http://localhost:3000"
     ],
     allow_credentials=True,
