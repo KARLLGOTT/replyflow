@@ -92,6 +92,18 @@ app = FastAPI(title="ReplyFlow AI", version="1.0.0")
 
 security = HTTPBearer(auto_error=False)
 
+# ===== CORS =====
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "https://classy-vacherin-53dad1.netlify.app",
+        "http://localhost:3000"
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 # Папка для загрузок
 UPLOAD_DIR = "uploads/knowledge"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
@@ -273,20 +285,6 @@ async def get_current_user_optional(
 @app.on_event("startup")
 def startup_event():
     init_db()
-
-
-# ===== CORS =====
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[
-        "https://classy-vacherin-53dad1.netlify.app",
-        "http://localhost:3000"
-    ],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
 
 @app.exception_handler(Exception)
 async def exception_handler(request: Request, exc: Exception):
