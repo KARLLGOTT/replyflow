@@ -278,7 +278,10 @@ def startup_event():
 # ===== CORS =====
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=CORS_ORIGINS,
+    allow_origins=[
+        "https://replyflow-bvmp3v8t8-karllgott-s-projects.vercel.app",
+        "http://localhost:3000"
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
