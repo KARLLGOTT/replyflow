@@ -45,12 +45,12 @@ export default function Admin() {
     const token = localStorage.getItem("accessToken");
     
     try {
-      const usersRes = await fetch("/api/admin/users", {
+      const usersRes = await fetch("https://replyflow-bot.onrender.com/api/admin/users", {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (usersRes.ok) setUsers(await usersRes.json());
       
-      const statsRes = await fetch("/api/admin/stats", {
+      const statsRes = await fetch("https://replyflow-bot.onrender.com/api/admin/stats", {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (statsRes.ok) setStats(await statsRes.json());
@@ -66,10 +66,10 @@ export default function Admin() {
     try {
       const token = localStorage.getItem("accessToken");
       const [analyticsRes, statsRes] = await Promise.all([
-        fetch("/api/admin/analytics?limit=200", {
+        fetch("https://replyflow-bot.onrender.com/api/admin/analytics?limit=200", {
           headers: { Authorization: `Bearer ${token}` }
         }),
-        fetch("/api/admin/analytics/stats", {
+        fetch("https://replyflow-bot.onrender.com/api/admin/analytics/stats", {
           headers: { Authorization: `Bearer ${token}` }
         })
       ]);
@@ -90,7 +90,7 @@ export default function Admin() {
 
   const updateUser = async (userId, data) => {
     const token = localStorage.getItem("accessToken");
-    const res = await fetch(`/api/admin/users/${userId}`, {
+    const res = await fetch(`https://replyflow-bot.onrender.com/api/admin/users/${userId}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -117,7 +117,7 @@ export default function Admin() {
   const extendSubscription = async (userId, days) => {
     const token = localStorage.getItem("accessToken");
     try {
-      const res = await fetch(`/api/admin/extend-subscription/${userId}?days=${days}`, {
+      const res = await fetch(`https://replyflow-bot.onrender.com/api/admin/extend-subscription/${userId}?days=${days}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -139,7 +139,7 @@ export default function Admin() {
   const resetUserLimits = async (userId) => {
     const token = localStorage.getItem("accessToken");
     try {
-      const res = await fetch(`/api/admin/reset-user-limits/${userId}`, {
+      const res = await fetch(`https://replyflow-bot.onrender.com/api/admin/reset-user-limits/${userId}`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -159,7 +159,7 @@ export default function Admin() {
   const getSubscriptionInfo = async (userId) => {
     const token = localStorage.getItem("accessToken");
     try {
-      const res = await fetch(`/api/admin/subscription-info/${userId}`, {
+      const res = await fetch(`https://replyflow-bot.onrender.com/api/admin/subscription-info/${userId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -185,7 +185,7 @@ export default function Admin() {
   const activateSubscription = async (userId, plan) => {
     const token = localStorage.getItem("accessToken");
     try {
-      const res = await fetch(`/api/admin/activate-subscription/${userId}?plan=${plan}&days=30`, {
+      const res = await fetch(`https://replyflow-bot.onrender.com/api/admin/activate-subscription/${userId}?plan=${plan}&days=30`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -208,7 +208,7 @@ export default function Admin() {
     setScriptsLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/admin/scripts", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/admin/scripts", {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -224,7 +224,7 @@ export default function Admin() {
   const toggleScript = async (scriptId) => {
     const token = localStorage.getItem("accessToken");
     try {
-      const res = await fetch(`/api/admin/scripts/${scriptId}/toggle`, {
+      const res = await fetch(`https://replyflow-bot.onrender.com/api/admin/scripts/${scriptId}/toggle`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -240,7 +240,7 @@ export default function Admin() {
     if (!window.confirm("Удалить этот скрипт?")) return;
     const token = localStorage.getItem("accessToken");
     try {
-      const res = await fetch(`/api/admin/scripts/${scriptId}`, {
+      const res = await fetch(`https://replyflow-bot.onrender.com/api/admin/scripts/${scriptId}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -257,7 +257,7 @@ export default function Admin() {
   const updateScript = async (scriptId) => {
     const token = localStorage.getItem("accessToken");
     try {
-      const res = await fetch(`/api/admin/scripts/${scriptId}`, {
+      const res = await fetch(`https://replyflow-bot.onrender.com/api/admin/scripts/${scriptId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
