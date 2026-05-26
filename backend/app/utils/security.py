@@ -21,7 +21,7 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 15  # 15 минут для access token (безопаснее)
 REFRESH_TOKEN_EXPIRE_DAYS = 30     # 30 дней для refresh token (remember me)
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/login")
 
 # ===== Password =====
