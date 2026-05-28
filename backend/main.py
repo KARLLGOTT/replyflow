@@ -310,14 +310,11 @@ def get_detector():
     return _detector
 
 def detect_language(text: str) -> str:
-    try:
-        lang = detect(text)
-        if lang == 'uk':
-            return 'uk'
-        else:
-            return 'en'
-    except Exception:
+    import re
+    # Если есть украинские/русские буквы — украинский
+    if re.search('[а-яА-Яіїєґ]', text):
         return 'uk'
+    return 'en'
 
 # ===== Groq клиент =====
 groq_client = None
