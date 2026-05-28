@@ -353,3 +353,35 @@ body {
 .animate-pulse {
   animation: blink 1s step-end infinite;
 }
+
+/* Принудительно показываем весь текст ответов */
+.responses .card p,
+.chat-bubble,
+.improved-answer p {
+  line-height: 1.5 !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: block !important;
+  white-space: normal !important;
+  word-break: break-word !important;
+}
+
+/* Убираем возможное скрытие текста */
+.card {
+  overflow: visible !important;
+  max-height: none !important;
+}
+
+/* Гарантируем, что контейнер с ответами не обрезает текст */
+.responses {
+  overflow: visible !important;
+}
+
+/* На маленьких экранах */
+@media (max-width: 768px) {
+  .responses .card p,
+  .chat-bubble {
+    font-size: 14px;
+    line-height: 1.4 !important;
+  }
+}
