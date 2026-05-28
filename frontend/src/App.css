@@ -385,3 +385,32 @@ body {
     line-height: 1.4 !important;
   }
 }
+
+/* Увеличиваем карточки ответов */
+.responses .card {
+  min-width: 300px;
+  max-width: 600px;
+  width: 100%;
+  padding: 20px;
+  height: auto;
+  min-height: 150px;
+}
+
+/* Текст внутри карточек */
+.responses .card p {
+  font-size: 16px;
+  line-height: 1.5;
+  white-space: normal;
+  word-break: break-word;
+}
+
+/* На маленьких экранах карточки растягиваются на всю ширину */
+@media (max-width: 1024px) {
+  .responses {
+    flex-direction: column;
+  }
+  .responses .card {
+    max-width: 100%;
+    min-width: auto;
+  }
+}
