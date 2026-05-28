@@ -1495,6 +1495,18 @@ async def send_email(
     request: Request,
     current_user: Optional[User] = Depends(get_current_user_optional)
 ):
+    # Запускаем отправку в фоне, не дожидаясь результата
+    asyncio.create_task(send_email_background(data, request, current_user))
+    
+    # Мгновенно возвращаем ответ пользователю
+    return {"status": "success", "message": "Спасибо за отзыв! Письмо будет отправлено в фоне."}
+
+
+async def send_email_background(
+    data: EmailMessage,
+    request: Request,
+    current_user: Optional[User]
+):
     try:
         client_ip = get_client_ip(request)
         user_agent = request.headers.get("user-agent", "Unknown")
@@ -1547,8 +1559,8 @@ async def send_email(
             server.login(config.EMAIL_ADDRESS, config.EMAIL_PASSWORD)
             server.send_message(msg)
             server.quit()
-            
-            return {"status": "success", "message": "Спасибо за отзыв!"}
+            print("Email sent via SMTP")
+            return
         except Exception as smtp_error:
             # Если SMTP не работает — пробуем отправить через Mailgun API
             print(f"SMTP failed: {smtp_error}, trying Mailgun API...")
@@ -1565,21 +1577,20 @@ async def send_email(
                 auth=("api", api_key),
                 data={
                     "from": f"ReplyFlow Bot <postmaster@{domain}>",
-                    "to": [config.EMAIL_ADDRESS],  # отправляем на твой email
+                    "to": [config.EMAIL_ADDRESS],
                     "subject": "Новое сообщение с сайта",
                     "text": email_content
                 }
             )
             
             if response.status_code == 200:
-                return {"status": "success", "message": "Спасибо за отзыв!"}
+                print("Email sent via Mailgun")
             else:
                 raise Exception(f"Mailgun API error: {response.text}")
                 
     except Exception as e:
         print(f"Ошибка отправки email: {e}")
-        return {"status": "error", "message": str(e)}
-
+        
 # ===== ВЕБХУК ДЛЯ ОПЛАТЫ =====
 @app.post("/api/webhooks/payment")
 async def payment_webhook(
