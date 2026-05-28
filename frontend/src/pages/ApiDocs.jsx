@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 export default function ApiDocs() {
   useEffect(() => {
     // Редирект на Swagger бекенда
-    window.location.href = "https://replyflow-production-313e.up.railway.app";
+    window.location.href = "https://replyflow-bot.onrender.com/docs";
   }, []);
 
   return (
