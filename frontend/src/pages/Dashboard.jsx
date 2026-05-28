@@ -54,7 +54,7 @@ export default function Dashboard() {
     try {
       const token = localStorage.getItem("accessToken");
       const language = localStorage.getItem("language") || "uk";
-      const res = await fetch(`/api/scripts/?language=${language}`, {
+      const res = await fetch(`https://replyflow-bot.onrender.com/api/scripts/?language=${language}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
