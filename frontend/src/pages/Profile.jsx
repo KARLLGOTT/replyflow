@@ -66,7 +66,7 @@ export default function Profile() {
     try {
       const token = localStorage.getItem("accessToken");
       const language = localStorage.getItem("language") || "uk";
-      const res = await fetch(`/api/scripts/?language=${language}`, {
+      const res = await fetch(`https://replyflow-bot.onrender.com/api/scripts/?language=${language}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -84,7 +84,7 @@ export default function Profile() {
     setKnowledgeLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/knowledge/", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/knowledge/", {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (res.ok) {
@@ -137,7 +137,7 @@ export default function Profile() {
     setStatsLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/users/me", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/users/me", {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -172,7 +172,7 @@ export default function Profile() {
     setIntegrationsLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/integrations/status", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/integrations/status", {
         headers: { Authorization: `Bearer ${token}` },
         credentials: "include",
       });
@@ -191,7 +191,7 @@ export default function Profile() {
     if (!newScript.name || !newScript.template) return;
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/scripts/", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/scripts/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -212,7 +212,7 @@ export default function Profile() {
   const updateScript = async (id, data) => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch(`/api/scripts/${id}`, {
+      const res = await fetch(`https://replyflow-bot.onrender.com/api/scripts/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -233,7 +233,7 @@ export default function Profile() {
     if (!window.confirm(t("scripts.delete_confirm"))) return;
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch(`/api/scripts/${id}`, {
+      const res = await fetch(`https://replyflow-bot.onrender.com/api/scripts/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -253,7 +253,7 @@ export default function Profile() {
     }
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/knowledge/", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/knowledge/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -279,7 +279,7 @@ export default function Profile() {
     if (!window.confirm(t("knowledge.delete_confirm") || "Delete this knowledge base item?")) return;
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch(`/api/knowledge/${id}`, {
+      const res = await fetch(`https://replyflow-bot.onrender.com/api/knowledge/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -305,7 +305,7 @@ export default function Profile() {
     
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/knowledge/upload-file", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/knowledge/upload-file", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData
@@ -334,7 +334,7 @@ export default function Profile() {
     }
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/integrations/crm/connect", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/integrations/crm/connect", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -358,7 +358,7 @@ export default function Profile() {
   const disconnectBitrix24 = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/integrations/crm/disconnect", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/integrations/crm/disconnect", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -378,7 +378,7 @@ export default function Profile() {
 
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/users/update-profile", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/users/update-profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -424,7 +424,7 @@ export default function Profile() {
 
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/users/change-password", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/users/change-password", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -461,7 +461,7 @@ export default function Profile() {
     setLoading(true);
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/users/cancel-subscription", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/users/cancel-subscription", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -487,7 +487,7 @@ export default function Profile() {
   const connectCRM = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/integrations/crm/connect", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/integrations/crm/connect", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -512,7 +512,7 @@ export default function Profile() {
   const disconnectCRM = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/integrations/crm/disconnect", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/integrations/crm/disconnect", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
         credentials: "include",
@@ -529,7 +529,7 @@ export default function Profile() {
   const registerWebhook = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/integrations/webhooks/register", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/integrations/webhooks/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -554,7 +554,7 @@ export default function Profile() {
   const unregisterWebhook = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/integrations/webhooks/unregister", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/integrations/webhooks/unregister", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
         credentials: "include",
@@ -571,7 +571,7 @@ export default function Profile() {
   const generateApiKey = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/integrations/api-keys/generate", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/integrations/api-keys/generate", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         credentials: "include",
@@ -593,7 +593,7 @@ export default function Profile() {
   const revokeApiKey = async () => {
     try {
       const token = localStorage.getItem("accessToken");
-      const res = await fetch("/api/integrations/api-keys/revoke", {
+      const res = await fetch("https://replyflow-bot.onrender.com/api/integrations/api-keys/revoke", {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
         credentials: "include",
