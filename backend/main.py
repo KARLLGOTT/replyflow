@@ -1555,14 +1555,11 @@ async def send_email_background(
             msg["From"] = config.EMAIL_ADDRESS
             msg["To"] = config.EMAIL_ADDRESS
             
-            server = smtplib.SMTP_SSL(config.EMAIL_SMTP_HOST, config.EMAIL_SMTP_PORT)
-            server.login(config.EMAIL_ADDRESS, config.EMAIL_PASSWORD)
-            server.send_message(msg)
-            server.quit()
+            loop = asyncio.get_event_loop()
+            await loop.run_in_executor(None, lambda: smtplib.SMTP_SSL(config.EMAIL_SMTP_HOST, config.EMAIL_SMTP_PORT).__enter__().login(config.EMAIL_ADDRESS, config.EMAIL_PASSWORD).send_message(msg).quit())
             print("Email sent via SMTP")
             return
         except Exception as smtp_error:
-            # Если SMTP не работает — пробуем отправить через Mailgun API
             print(f"SMTP failed: {smtp_error}, trying Mailgun API...")
             
             api_key = os.environ.get("MAILGUN_API_KEY")
@@ -1571,22 +1568,23 @@ async def send_email_background(
             
             domain = "sandbox95ed721e2bf445488e3a9c910019da16.mailgun.org"
             
-            import requests
-            response = requests.post(
-                f"https://api.mailgun.net/v3/{domain}/messages",
-                auth=("api", api_key),
-                data={
-                    "from": f"ReplyFlow Bot <postmaster@{domain}>",
-                    "to": [config.EMAIL_ADDRESS],
-                    "subject": "Новое сообщение с сайта",
-                    "text": email_content
-                }
-            )
-            
-            if response.status_code == 200:
-                print("Email sent via Mailgun")
-            else:
-                raise Exception(f"Mailgun API error: {response.text}")
+            # Используем aiohttp вместо requests
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    f"https://api.mailgun.net/v3/{domain}/messages",
+                    auth=aiohttp.BasicAuth("api", api_key),
+                    data={
+                        "from": f"ReplyFlow Bot <postmaster@{domain}>",
+                        "to": [config.EMAIL_ADDRESS],
+                        "subject": "Новое сообщение с сайта",
+                        "text": email_content
+                    }
+                ) as response:
+                    if response.status == 200:
+                        print("Email sent via Mailgun")
+                    else:
+                        response_text = await response.text()
+                        raise Exception(f"Mailgun API error: {response.status} - {response_text}")
                 
     except Exception as e:
         print(f"Ошибка отправки email: {e}")
