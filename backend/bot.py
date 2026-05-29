@@ -257,7 +257,7 @@ async def shutdown():
 # ===== АСИНХРОННЫЙ ЗАПУСК ДЛЯ FASTAPI =====
 async def run_bot():
     """Запуск бота внутри FastAPI (не блокирует другие запросы)"""
-    app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+    app = Application.builder().token(TELEGRAM_BOT_TOKEN).build(base_file_path=None)
     
     # Добавляем обработчики
     app.add_handler(CommandHandler("start", start))
