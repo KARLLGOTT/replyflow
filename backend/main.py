@@ -297,11 +297,6 @@ async def get_current_user_optional(
     
     return None
 
-
-@app.on_event("startup")
-def startup_event():
-    init_db()
-
 @app.exception_handler(Exception)
 async def exception_handler(request: Request, exc: Exception):
     error_msg = str(exc)
