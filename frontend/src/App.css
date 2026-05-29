@@ -101,6 +101,7 @@ body {
   overflow-y: auto;
   /*border-top: 1px solid #eee;*/
   padding-top: 12px;
+  min-height: 500px;
 }
 
 /* Chat message */
@@ -154,8 +155,6 @@ body {
   transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
   overflow-y: auto;    /* если текст очень длинный — своя прокрутка */
   padding: 20px;
-  min-height: 180px;   /* минимальная высота карточки */
-  max-height: 300px;   /* максимальная высота */
 }
 
 .card:hover {
