@@ -4,8 +4,8 @@ import os
 import asyncpg
 from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackQueryHandler
-import asyncio
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackQueryHandler, Defaults
+from telegram.request import HTTPXRequest
 
 load_dotenv()
 
@@ -201,27 +201,24 @@ async def myplan(update: Update, context):
     else:
         await update.message.reply_text("❌ API ключ не привязан. Используй /setkey")
 
-# ===== АСИНХРОННЫЙ ЗАПУСК ДЛЯ FASTAPI =====
-async def run_bot():
-    """Запуск бота внутри FastAPI (без конфликтов)"""
-    app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-    app.add_handler(CommandHandler("start", start))
-    app.add_handler(CommandHandler("help", help_command))
-    app.add_handler(CommandHandler("setkey", setkey))
-    app.add_handler(CommandHandler("setlead", setlead))
-    app.add_handler(CommandHandler("mylead", mylead))
-    app.add_handler(CommandHandler("myplan", myplan))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, generate_response))
-    app.add_handler(CallbackQueryHandler(button_callback))
-    print("[BOT] Starting...")
-    try:
-        await app.initialize()
-        await app.start()
-        await app.updater.start_polling()
-        print("[BOT] Started polling")
-    except Exception as e:
-        print(f"[BOT] Error: {e}")
-    return app
+# ===== Глобальный объект приложения для Webhook =====
+_bot_app = None
 
-if __name__ == "__main__":
-    asyncio.run(run_bot())
+async def get_bot_app():
+    global _bot_app
+    if _bot_app is None:
+        _bot_app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+        _bot_app.add_handler(CommandHandler("start", start))
+        _bot_app.add_handler(CommandHandler("help", help_command))
+        _bot_app.add_handler(CommandHandler("setkey", setkey))
+        _bot_app.add_handler(CommandHandler("setlead", setlead))
+        _bot_app.add_handler(CommandHandler("mylead", mylead))
+        _bot_app.add_handler(CommandHandler("myplan", myplan))
+        _bot_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, generate_response))
+        _bot_app.add_handler(CallbackQueryHandler(button_callback))
+        await _bot_app.initialize()
+        # Устанавливаем webhook
+        webhook_url = f"{API_URL}/webhook"
+        await _bot_app.bot.set_webhook(webhook_url)
+        print(f"[BOT] Webhook set to {webhook_url}")
+    return _bot_app
