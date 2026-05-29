@@ -44,6 +44,10 @@ from app.utils.security import (
     decode_access_token
 )
 
+# ===== TELEGRAM BOT =====
+import asyncio
+from bot import main as start_bot
+
 # ===== Redis =====
 from app.utils.redis_client import (
     get_session, add_to_memory, reset_memory, build_history_text,
@@ -1912,6 +1916,17 @@ async def upload_knowledge_file(
         "message": "File uploaded"
     }
 
+# ===== ЗАПУСК БОТА =====
+@app.on_event("startup")
+async def startup_event():
+    init_db()
+    asyncio.create_task(run_bot_background())
+
+async def run_bot_background():
+    try:
+        await asyncio.to_thread(start_bot)
+    except Exception as e:
+        print(f"Bot error: {e}")
 
 # ===== ROUTERS =====
 app.include_router(users_router)
