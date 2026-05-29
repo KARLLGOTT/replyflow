@@ -26,7 +26,6 @@ from langdetect import detect
 from fastapi.responses import StreamingResponse
 from app.utils.logger import log_error, log_info, log_warning
 from app.utils.telegram import send_telegram_message_sync
-from bot import run_bot
 
 # ===== Конфиг =====
 from app.config import config
@@ -47,7 +46,7 @@ from app.utils.security import (
 
 # ===== TELEGRAM BOT =====
 import asyncio
-from bot import main as start_bot
+from bot import run_bot
 
 # ===== Redis =====
 from app.utils.redis_client import (
