@@ -26,6 +26,7 @@ from langdetect import detect
 from fastapi.responses import StreamingResponse
 from app.utils.logger import log_error, log_info, log_warning
 from app.utils.telegram import send_telegram_message_sync
+from bot import run_bot
 
 # ===== Конфиг =====
 from app.config import config
@@ -1917,16 +1918,12 @@ async def upload_knowledge_file(
     }
 
 # ===== ЗАПУСК БОТА =====
+from bot import run_bot
+
 @app.on_event("startup")
 async def startup_event():
     init_db()
-    asyncio.create_task(run_bot_background())
-
-async def run_bot_background():
-    try:
-        await asyncio.to_thread(start_bot)
-    except Exception as e:
-        print(f"Bot error: {e}")
+    asyncio.create_task(run_bot())
 
 # ===== ROUTERS =====
 app.include_router(users_router)
