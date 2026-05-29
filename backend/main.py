@@ -47,7 +47,7 @@ from app.utils.security import (
 # ===== TELEGRAM BOT =====
 import asyncio
 from telegram import Update
-from bot import run_bot
+from bot import get_bot_app
 
 # ===== Redis =====
 from app.utils.redis_client import (
