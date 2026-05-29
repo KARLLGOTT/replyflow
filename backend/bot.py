@@ -218,7 +218,16 @@ async def get_bot_app():
         _bot_app.add_handler(CallbackQueryHandler(button_callback))
         await _bot_app.initialize()
         # Устанавливаем webhook
-        webhook_url = f"{API_URL}/webhook"
+        render_url = os.getenv("RENDER_EXTERNAL_URL")
+if render_url:
+    webhook_url = f"{render_url}/webhook"
+else:
+    # Fallback - принудительно HTTPS
+    base_url = API_URL.replace('http://', 'https://')
+    webhook_url = f"{base_url}/webhook"
+
+print(f"[BOT] Setting webhook to: {webhook_url}")  # Добавьте для отладки
+await _bot_app.bot.set_webhook(webhook_url)
         await _bot_app.bot.set_webhook(webhook_url)
         print(f"[BOT] Webhook set to {webhook_url}")
     return _bot_app
