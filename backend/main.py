@@ -46,6 +46,7 @@ from app.utils.security import (
 
 # ===== TELEGRAM BOT =====
 import asyncio
+from telegram import Update
 from bot import run_bot
 
 # ===== Redis =====
@@ -112,6 +113,16 @@ app.add_middleware(
 # Папка для загрузок
 UPLOAD_DIR = "uploads/knowledge"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+# ===== TELEGRAM WEBHOOK =====
+from bot import get_bot_app
+
+@app.post("/webhook")
+async def telegram_webhook(request: Request):
+    bot_app = await get_bot_app()
+    update = Update.de_json(await request.json(), bot_app.bot)
+    await bot_app.process_update(update)
+    return {"status": "ok"}
 
 # ===== ФУНКЦИИ ДЛЯ ИЗВЛЕЧЕНИЯ ТЕКСТА ИЗ ФАЙЛОВ =====
 def extract_text_from_file(file_path: str, file_type: str) -> str:
@@ -1917,12 +1928,12 @@ async def upload_knowledge_file(
     }
 
 # ===== ЗАПУСК БОТА =====
-from bot import run_bot
 
 @app.on_event("startup")
 async def startup_event():
     init_db()
-    asyncio.create_task(run_bot())
+    # Инициализируем бота (устанавливает webhook)
+    await get_bot_app()
 
 # ===== ROUTERS =====
 app.include_router(users_router)
