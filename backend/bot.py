@@ -217,17 +217,19 @@ async def get_bot_app():
         _bot_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, generate_response))
         _bot_app.add_handler(CallbackQueryHandler(button_callback))
         await _bot_app.initialize()
-        # Устанавливаем webhook
+        
+        # ПРАВИЛЬНОЕ формирование webhook URL
         render_url = os.getenv("RENDER_EXTERNAL_URL")
-if render_url:
-    webhook_url = f"{render_url}/webhook"
-else:
-    # Fallback - принудительно HTTPS
-    base_url = API_URL.replace('http://', 'https://')
-    webhook_url = f"{base_url}/webhook"
-
-print(f"[BOT] Setting webhook to: {webhook_url}")  # Добавьте для отладки
-await _bot_app.bot.set_webhook(webhook_url)
-        await _bot_app.bot.set_webhook(webhook_url)
-        print(f"[BOT] Webhook set to {webhook_url}")
+        if render_url:
+            base_url = render_url
+        else:
+            base_url = os.getenv("API_URL", "https://replyflow-bot.onrender.com")
+            base_url = base_url.replace('http://', 'https://')
+        
+        webhook_url = f"{base_url}/webhook"
+        
+        print(f"[BOT] Setting webhook to: {webhook_url}")
+        await _bot_app.bot.set_webhook(webhook_url)  # <--- ЭТА СТРОКА ДОЛЖНА БЫТЬ НА ТОМ ЖЕ УРОВНЕ, ЧТО И PRINT
+        print(f"[BOT] Webhook set successfully")
+        
     return _bot_app
