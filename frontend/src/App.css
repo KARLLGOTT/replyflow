@@ -139,10 +139,6 @@ body {
   gap: 20px;
   flex-wrap: wrap;
   margin-top: 12px;
- 
-  max-height: 600px;  /* увеличил высоту */
-  overflow-y: auto;
-  padding-right: 10px;
 }
 
 .responses .card {
@@ -158,6 +154,8 @@ body {
   transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
   overflow-y: auto;    /* если текст очень длинный — своя прокрутка */
   padding: 20px;
+  min-height: 180px;   /* минимальная высота карточки */
+  max-height: 300px;   /* максимальная высота */
 }
 
 .card:hover {
