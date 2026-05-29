@@ -97,6 +97,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://classy-vacherin-53dad1.netlify.app",
+        "https://replyflow-3q5.pages.dev",
         "http://localhost:3000"
     ],
     allow_credentials=True,
