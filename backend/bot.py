@@ -29,7 +29,6 @@ async def get_db_pool():
         db_pool = await asyncpg.create_pool(DATABASE_URL, min_size=1, max_size=5)
         print("[BOT] Database pool created")
         
-        # Создаем таблицу
         async with db_pool.acquire() as conn:
             await conn.execute("""
                 CREATE TABLE IF NOT EXISTS bot_keys (
@@ -255,8 +254,9 @@ async def shutdown():
         print("[BOT] Database pool closed")
 
 
-def main():
-    # Создаем приложение
+# ===== АСИНХРОННЫЙ ЗАПУСК ДЛЯ FASTAPI =====
+async def run_bot():
+    """Запуск бота внутри FastAPI (не блокирует другие запросы)"""
     app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
     
     # Добавляем обработчики
@@ -271,13 +271,18 @@ def main():
     
     print("[BOT] Starting...")
     
-    # Запускаем бота (без asyncio.run)
-    app.run_polling(allowed_updates=["message", "callback_query"])
+    # Инициализация и запуск polling
+    await app.initialize()
+    await app.start()
+    await app.updater.start_polling()
+    
+    print("[BOT] Started polling")
+    return app
 
 
 if __name__ == "__main__":
+    import asyncio
     try:
-        main()
+        asyncio.run(run_bot())
     finally:
-        import asyncio
         asyncio.run(shutdown())
