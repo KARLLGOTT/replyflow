@@ -201,27 +201,27 @@ async def myplan(update: Update, context: ContextTypes.DEFAULT_TYPE):
     else:
         await update.message.reply_text("❌ API ключ не привязан. Используй /setkey")
 
-# ===== Глобальный объект приложения =====
-_app = None
+# ===== ОСНОВНАЯ ФУНКЦИЯ ДЛЯ ЗАПУСКА =====
+application = None
 
-async def get_app():
-    global _app
-    if _app is None:
-        _app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-        _app.add_handler(CommandHandler("start", start))
-        _app.add_handler(CommandHandler("help", help_command))
-        _app.add_handler(CommandHandler("setkey", setkey))
-        _app.add_handler(CommandHandler("setlead", setlead))
-        _app.add_handler(CommandHandler("mylead", mylead))
-        _app.add_handler(CommandHandler("myplan", myplan))
-        _app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, generate_response))
-        _app.add_handler(CallbackQueryHandler(button_callback))
-        await _app.initialize()
-        await _app.bot.delete_webhook()
+async def get_bot_app():
+    global application
+    if application is None:
+        application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+        application.add_handler(CommandHandler("start", start))
+        application.add_handler(CommandHandler("help", help_command))
+        application.add_handler(CommandHandler("setkey", setkey))
+        application.add_handler(CommandHandler("setlead", setlead))
+        application.add_handler(CommandHandler("mylead", mylead))
+        application.add_handler(CommandHandler("myplan", myplan))
+        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, generate_response))
+        application.add_handler(CallbackQueryHandler(button_callback))
+        await application.initialize()
+        await application.bot.delete_webhook()
         print("[BOT] Webhook deleted")
-    return _app
+    return application
 
-async def start_bot():
-    app = await get_app()
+async def start_polling():
+    app = await get_bot_app()
     print("[BOT] Starting polling...")
-    await app.updater.start_polling()
+    await app.start_polling()
