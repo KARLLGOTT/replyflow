@@ -9,7 +9,7 @@
     "contextMenus"
   ],
   "host_permissions": [
-    "http://localhost:8000/*",
+    "https://replyflow-bot.onrender.com/*",
     "https://web.telegram.org/*",
     "https://www.instagram.com/*",
     "https://web.viber.com/*"
