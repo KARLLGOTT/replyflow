@@ -10,7 +10,7 @@ from telegram.request import HTTPXRequest
 load_dotenv()
 
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
-API_URL = os.getenv("API_URL", "https://replyflow-bot.onrender.com")
+API_URL = os.getenv("API_URL", "http://localhost:10000")
 DATABASE_URL = os.getenv("DATABASE_URL")
 
 if not TELEGRAM_BOT_TOKEN:
