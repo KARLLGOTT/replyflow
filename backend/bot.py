@@ -208,23 +208,22 @@ async def get_bot_app():
     global _bot_app
     if _bot_app is None:
         # === ПРОКСИ ДЛЯ ОБХОДА БЛОКИРОВОК ===
-        # Бесплатный прокси для Telegram API
         proxy_url = "https://telegram-proxy.fgturkiye.workers.dev"
         
-        # Создаем HTTPX клиент с прокси
-        http_client = httpx.AsyncClient(
-            proxy=proxy_url,
-            timeout=httpx.Timeout(30.0, connect=30.0)
-        )
-        request = HTTPXRequest(http_client=http_client)  # ← ИСПРАВЛЕНО: http_client, не client
+        # Создаем кастомный клиент
+        http_client = httpx.AsyncClient(proxy=proxy_url, timeout=httpx.Timeout(30.0))
         
-        # Создаем приложение с прокси и без встроенного Updater
+        # Передаем клиент через connection_pool_factory
+        request = HTTPXRequest(connection_pool_factory=lambda: http_client)
+        
+        # Создаем приложение с прокси
         _bot_app = Application.builder()\
             .token(TELEGRAM_BOT_TOKEN)\
             .request(request)\
             .updater(None)\
             .build()
         
+        # ... остальные обработчики (add_handler) ...
         _bot_app.add_handler(CommandHandler("start", start))
         _bot_app.add_handler(CommandHandler("help", help_command))
         _bot_app.add_handler(CommandHandler("setkey", setkey))
@@ -233,15 +232,11 @@ async def get_bot_app():
         _bot_app.add_handler(CommandHandler("myplan", myplan))
         _bot_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, generate_response))
         _bot_app.add_handler(CallbackQueryHandler(button_callback))
+        
         await _bot_app.initialize()
         
-        # Устанавливаем webhook
         render_url = os.getenv("RENDER_EXTERNAL_URL")
-        if render_url:
-            webhook_url = f"{render_url}/webhook"
-        else:
-            base_url = os.getenv("API_URL", "https://replyflow-bot.onrender.com")
-            webhook_url = f"{base_url}/webhook"
+        webhook_url = f"{render_url}/webhook" if render_url else f"{API_URL}/webhook"
         
         await _bot_app.bot.set_webhook(webhook_url)
         print(f"[BOT] Webhook set to {webhook_url}")
