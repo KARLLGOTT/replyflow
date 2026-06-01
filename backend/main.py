@@ -103,7 +103,10 @@ app.add_middleware(
     allow_origins=[
         "https://classy-vacherin-53dad1.netlify.app",
         "https://replyflow-3q5.pages.dev",
-        "http://localhost:3000"
+        "http://localhost:3000",
+        "https://web.telegram.org",          # <--- ДОБАВИТЬ ЭТУ СТРОКУ
+        "https://www.instagram.com",         # <--- И ЭТУ, если нужно
+        "chrome-extension://*"               # <--- И ЭТУ для расширения
     ],
     allow_credentials=True,
     allow_methods=["*"],
