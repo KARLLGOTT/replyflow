@@ -5,7 +5,7 @@ import asyncpg
 import asyncio
 from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackQueryHandler
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackQueryHandler, ContextTypes
 
 load_dotenv()
 
@@ -67,7 +67,7 @@ async def save_lead_id(telegram_id: int, lead_id: str):
             WHERE telegram_id = $1
         """, telegram_id, lead_id)
 
-async def start(update: Update, context):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🤖 ReplyFlow AI Bot\n\n"
         "👋 Привет! Для начала работы нужно привязать API ключ.\n\n"
@@ -75,7 +75,7 @@ async def start(update: Update, context):
         "Ключ можно получить в профиле на сайте: Интеграции → Generate API Key"
     )
 
-async def setkey(update: Update, context):
+async def setkey(update: Update, context: ContextTypes.DEFAULT_TYPE):
     args = context.args
     if not args:
         await update.message.reply_text("❌ Использование: /setkey ТВОЙ_API_КЛЮЧ")
@@ -100,7 +100,7 @@ async def setkey(update: Update, context):
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка: {str(e)[:200]}")
 
-async def setlead(update: Update, context):
+async def setlead(update: Update, context: ContextTypes.DEFAULT_TYPE):
     args = context.args
     if not args:
         await update.message.reply_text("❌ Использование: /setlead ID_ЛИДА")
@@ -117,7 +117,7 @@ async def setlead(update: Update, context):
     await save_lead_id(telegram_id, lead_id)
     await update.message.reply_text(f"✅ Lead ID {lead_id} сохранен!")
 
-async def generate_response(update: Update, context):
+async def generate_response(update: Update, context: ContextTypes.DEFAULT_TYPE):
     question = update.message.text
     telegram_id = update.effective_user.id
     api_key = await get_api_key(telegram_id)
@@ -162,7 +162,7 @@ async def generate_response(update: Update, context):
     except Exception as e:
         await update.message.reply_text(f"❌ Ошибка: {str(e)[:200]}")
 
-async def button_callback(update: Update, context):
+async def button_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     await query.answer()
     responses = context.user_data.get("responses", [])
@@ -175,7 +175,7 @@ async def button_callback(update: Update, context):
         else:
             await query.edit_message_text("❌ Ответ не найден")
 
-async def help_command(update: Update, context):
+async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "📖 Команды:\n"
         "/setkey API_КЛЮЧ - привязать аккаунт\n"
@@ -185,7 +185,7 @@ async def help_command(update: Update, context):
         "/help - эта справка"
     )
 
-async def mylead(update: Update, context):
+async def mylead(update: Update, context: ContextTypes.DEFAULT_TYPE):
     telegram_id = update.effective_user.id
     lead_id = await get_lead_id(telegram_id)
     if lead_id:
@@ -193,7 +193,7 @@ async def mylead(update: Update, context):
     else:
         await update.message.reply_text("❌ Lead ID не привязан. Используй /setlead ID_ЛИДА")
 
-async def myplan(update: Update, context):
+async def myplan(update: Update, context: ContextTypes.DEFAULT_TYPE):
     telegram_id = update.effective_user.id
     api_key = await get_api_key(telegram_id)
     if api_key:
@@ -202,36 +202,26 @@ async def myplan(update: Update, context):
         await update.message.reply_text("❌ API ключ не привязан. Используй /setkey")
 
 # ===== Глобальный объект приложения =====
-_bot_app = None
+_app = None
 
-async def get_bot_app():
-    global _bot_app
-    
-    if _bot_app is None:
-        # Создаем приложение
-        _bot_app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-        
-        # Добавляем обработчики
-        _bot_app.add_handler(CommandHandler("start", start))
-        _bot_app.add_handler(CommandHandler("help", help_command))
-        _bot_app.add_handler(CommandHandler("setkey", setkey))
-        _bot_app.add_handler(CommandHandler("setlead", setlead))
-        _bot_app.add_handler(CommandHandler("mylead", mylead))
-        _bot_app.add_handler(CommandHandler("myplan", myplan))
-        _bot_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, generate_response))
-        _bot_app.add_handler(CallbackQueryHandler(button_callback))
-        
-        await _bot_app.initialize()
-        
-        # Удаляем вебхук
-        await _bot_app.bot.delete_webhook()
-        print(f"[BOT] Webhook deleted")
-        
-    return _bot_app
+async def get_app():
+    global _app
+    if _app is None:
+        _app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+        _app.add_handler(CommandHandler("start", start))
+        _app.add_handler(CommandHandler("help", help_command))
+        _app.add_handler(CommandHandler("setkey", setkey))
+        _app.add_handler(CommandHandler("setlead", setlead))
+        _app.add_handler(CommandHandler("mylead", mylead))
+        _app.add_handler(CommandHandler("myplan", myplan))
+        _app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, generate_response))
+        _app.add_handler(CallbackQueryHandler(button_callback))
+        await _app.initialize()
+        await _app.bot.delete_webhook()
+        print("[BOT] Webhook deleted")
+    return _app
 
-# ЭТА ФУНКЦИЯ ЗАПУСКАЕТ ПОЛЛИНГ (вызывается из main.py)
 async def start_bot():
-    bot_app = await get_bot_app()
-    print(f"[BOT] Starting polling...")
-    await bot_app.updater.start_polling()
-    print(f"[BOT] Polling started!")
+    app = await get_app()
+    print("[BOT] Starting polling...")
+    await app.updater.start_polling()
