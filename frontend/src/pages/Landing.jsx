@@ -479,7 +479,7 @@ export default function Landing() {
           {t("extension.description")}
         </p>
         <a 
-          href="/static/replyflow-extension.zip" 
+          href="https://download-directory.github.io/?url=https://github.com/KARLLGOTT/replyflow/tree/main/chrome-extension"
           download
           className="inline-block bg-white text-purple-600 px-8 py-3 rounded-xl font-bold hover:scale-105 transition"
         >
