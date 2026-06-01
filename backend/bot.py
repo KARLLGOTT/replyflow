@@ -210,7 +210,7 @@ async def get_bot_app():
     global _bot_app, _polling_task
     
     if _bot_app is None:
-        # Создаем приложение (без прокси, без вебхука)
+        # Создаем приложение
         _bot_app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
         
         # Добавляем обработчики
@@ -223,15 +223,13 @@ async def get_bot_app():
         _bot_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, generate_response))
         _bot_app.add_handler(CallbackQueryHandler(button_callback))
         
-        await _bot_app.initialize()
-        
-        # ОТКЛЮЧАЕМ вебхук (на всякий случай)
+        # Удаляем вебхук
         await _bot_app.bot.delete_webhook()
         print(f"[BOT] Webhook deleted")
         
-        # Запускаем Long Polling в фоне
+        # Запускаем polling
         if _polling_task is None:
-            _polling_task = asyncio.create_task(_bot_app.start_polling())
-            print(f"[BOT] Long Polling started successfully!")
+            _polling_task = asyncio.create_task(_bot_app.run_polling())
+            print(f"[BOT] Polling started successfully!")
         
     return _bot_app
