@@ -5,8 +5,7 @@ import asyncpg
 import asyncio
 from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackQueryHandler, Defaults
-from telegram.request import HTTPXRequest
+from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackQueryHandler
 
 load_dotenv()
 
@@ -202,12 +201,11 @@ async def myplan(update: Update, context):
     else:
         await update.message.reply_text("❌ API ключ не привязан. Используй /setkey")
 
-# ===== Глобальный объект приложения для Long Polling =====
+# ===== Глобальный объект приложения =====
 _bot_app = None
-_polling_task = None
 
 async def get_bot_app():
-    global _bot_app, _polling_task
+    global _bot_app
     
     if _bot_app is None:
         # Создаем приложение
@@ -223,13 +221,17 @@ async def get_bot_app():
         _bot_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, generate_response))
         _bot_app.add_handler(CallbackQueryHandler(button_callback))
         
+        await _bot_app.initialize()
+        
         # Удаляем вебхук
         await _bot_app.bot.delete_webhook()
         print(f"[BOT] Webhook deleted")
         
-        # Запускаем polling
-        if _polling_task is None:
-            _polling_task = asyncio.create_task(_bot_app.run_polling())
-            print(f"[BOT] Polling started successfully!")
-        
     return _bot_app
+
+# ЭТА ФУНКЦИЯ ЗАПУСКАЕТ ПОЛЛИНГ (вызывается из main.py)
+async def start_bot():
+    bot_app = await get_bot_app()
+    print(f"[BOT] Starting polling...")
+    await bot_app.updater.start_polling()
+    print(f"[BOT] Polling started!")
