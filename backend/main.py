@@ -1927,8 +1927,8 @@ async def upload_knowledge_file(
 @app.on_event("startup")
 async def startup_event():
     init_db()
-     Запускаем бота в фоне
- await get_bot_app()
+    # Запускаем бота в фоне
+    await get_bot_app()
 
 # ===== ROUTERS =====
 app.include_router(users_router)
