@@ -1924,19 +1924,11 @@ async def upload_knowledge_file(
 
 # ===== ЗАПУСК БОТА =====
 
-#@app.on_event("startup")
-#async def startup_event():
-#    init_db()
-    # Запускаем бота в фоне
- #   asyncio.create_task(start_bot_polling())
-
-#async def start_bot_polling():
-#   from bot import start_polling
-#    await start_polling()
-
 @app.on_event("startup")
-def startup_event():
+async def startup_event():
     init_db()
+     Запускаем бота в фоне
+ await get_bot_app()
 
 # ===== ROUTERS =====
 app.include_router(users_router)
