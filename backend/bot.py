@@ -2,6 +2,7 @@
 import httpx
 import os
 import asyncpg
+import asyncio
 from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackQueryHandler, Defaults
@@ -201,13 +202,18 @@ async def myplan(update: Update, context):
     else:
         await update.message.reply_text("❌ API ключ не привязан. Используй /setkey")
 
-# ===== Глобальный объект приложения для Webhook =====
+# ===== Глобальный объект приложения для Long Polling =====
 _bot_app = None
+_polling_task = None
 
 async def get_bot_app():
-    global _bot_app
+    global _bot_app, _polling_task
+    
     if _bot_app is None:
+        # Создаем приложение (без прокси, без вебхука)
         _bot_app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+        
+        # Добавляем обработчики
         _bot_app.add_handler(CommandHandler("start", start))
         _bot_app.add_handler(CommandHandler("help", help_command))
         _bot_app.add_handler(CommandHandler("setkey", setkey))
@@ -216,20 +222,16 @@ async def get_bot_app():
         _bot_app.add_handler(CommandHandler("myplan", myplan))
         _bot_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, generate_response))
         _bot_app.add_handler(CallbackQueryHandler(button_callback))
+        
         await _bot_app.initialize()
         
-        # ПРАВИЛЬНОЕ формирование webhook URL
-        render_url = os.getenv("RENDER_EXTERNAL_URL")
-        if render_url:
-            base_url = render_url
-        else:
-            base_url = os.getenv("API_URL", "https://replyflow-bot.onrender.com")
-            base_url = base_url.replace('http://', 'https://')
+        # ОТКЛЮЧАЕМ вебхук (на всякий случай)
+        await _bot_app.bot.delete_webhook()
+        print(f"[BOT] Webhook deleted")
         
-        webhook_url = f"{base_url}/webhook"
-        
-        print(f"[BOT] Setting webhook to: {webhook_url}")
-        await _bot_app.bot.set_webhook(webhook_url)  # <--- ЭТА СТРОКА ДОЛЖНА БЫТЬ НА ТОМ ЖЕ УРОВНЕ, ЧТО И PRINT
-        print(f"[BOT] Webhook set successfully")
+        # Запускаем Long Polling в фоне
+        if _polling_task is None:
+            _polling_task = asyncio.create_task(_bot_app.start_polling())
+            print(f"[BOT] Long Polling started successfully!")
         
     return _bot_app
