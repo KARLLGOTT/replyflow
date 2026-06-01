@@ -1,7 +1,7 @@
 // content.js - injected into page
 console.log("ReplyFlow AI content script loaded");
 
-const API_URL = "http://127.0.0.1:8000";
+https://replyflow-bot.onrender.com/generate;
 
 let selectionTimeout = null;
 let floatingButton = null;
