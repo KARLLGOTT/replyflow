@@ -202,26 +202,26 @@ async def myplan(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("❌ API ключ не привязан. Используй /setkey")
 
 # ===== ОСНОВНАЯ ФУНКЦИЯ ДЛЯ ЗАПУСКА =====
-application = None
+_bot_app = None
 
 async def get_bot_app():
-    global application
-    if application is None:
-        application = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
-        application.add_handler(CommandHandler("start", start))
-        application.add_handler(CommandHandler("help", help_command))
-        application.add_handler(CommandHandler("setkey", setkey))
-        application.add_handler(CommandHandler("setlead", setlead))
-        application.add_handler(CommandHandler("mylead", mylead))
-        application.add_handler(CommandHandler("myplan", myplan))
-        application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, generate_response))
-        application.add_handler(CallbackQueryHandler(button_callback))
-        await application.initialize()
-        await application.bot.delete_webhook()
+    global _bot_app
+    if _bot_app is None:
+        _bot_app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+        _bot_app.add_handler(CommandHandler("start", start))
+        _bot_app.add_handler(CommandHandler("help", help_command))
+        _bot_app.add_handler(CommandHandler("setkey", setkey))
+        _bot_app.add_handler(CommandHandler("setlead", setlead))
+        _bot_app.add_handler(CommandHandler("mylead", mylead))
+        _bot_app.add_handler(CommandHandler("myplan", myplan))
+        _bot_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, generate_response))
+        _bot_app.add_handler(CallbackQueryHandler(button_callback))
+        await _bot_app.initialize()
+        await _bot_app.bot.delete_webhook()
         print("[BOT] Webhook deleted")
-    return application
+    return _bot_app
 
 async def start_polling():
     app = await get_bot_app()
     print("[BOT] Starting polling...")
-    await app.run_polling()
+    await app.updater.start_polling()  # Используем updater, а не run_polling
