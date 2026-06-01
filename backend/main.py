@@ -117,12 +117,12 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # ===== TELEGRAM WEBHOOK =====
 from bot import get_bot_app
 
-# @app.post("/webhook")
-# async def telegram_webhook(request: Request):
-#    bot_app = await get_bot_app()
-#    update = Update.de_json(await request.json(), bot_app.bot)
-#    await bot_app.process_update(update)
-#    return {"status": "ok"}
+@app.post("/webhook")
+async def telegram_webhook(request: Request):
+    bot_app = await get_bot_app()
+    update = Update.de_json(await request.json(), bot_app.bot)
+    await bot_app.process_update(update)
+    return {"status": "ok"}
 
 # ===== ФУНКЦИИ ДЛЯ ИЗВЛЕЧЕНИЯ ТЕКСТА ИЗ ФАЙЛОВ =====
 def extract_text_from_file(file_path: str, file_type: str) -> str:
