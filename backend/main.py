@@ -1927,8 +1927,12 @@ async def upload_knowledge_file(
 @app.on_event("startup")
 async def startup_event():
     init_db()
-    # Инициализируем бота (устанавливает webhook)
-    await get_bot_app()
+    # Запускаем бота в фоне
+    asyncio.create_task(start_bot_polling())
+
+async def start_bot_polling():
+    from bot import start_bot
+    await start_bot()
 
 # ===== ROUTERS =====
 app.include_router(users_router)
