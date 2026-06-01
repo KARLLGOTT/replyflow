@@ -5,6 +5,7 @@ import asyncpg
 from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackQueryHandler
+from telegram.request import HTTPXRequest
 
 load_dotenv()
 
@@ -206,7 +207,19 @@ _bot_app = None
 async def get_bot_app():
     global _bot_app
     if _bot_app is None:
-        _bot_app = Application.builder().token(TELEGRAM_BOT_TOKEN).updater(None).build()
+        # Прокси для обхода блокировок Telegram
+        proxy_url = "http://proxy.packetstream.io:31111"
+        
+        # Создаем клиент с прокси
+        http_client = httpx.AsyncClient(proxies=proxy_url, timeout=30.0)
+        request = HTTPXRequest(client=http_client)
+        
+        _bot_app = Application.builder()\
+            .token(TELEGRAM_BOT_TOKEN)\
+            .request(request)\
+            .updater(None)\
+            .build()
+        
         _bot_app.add_handler(CommandHandler("start", start))
         _bot_app.add_handler(CommandHandler("help", help_command))
         _bot_app.add_handler(CommandHandler("setkey", setkey))
