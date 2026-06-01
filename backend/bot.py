@@ -206,7 +206,8 @@ _bot_app = None
 async def get_bot_app():
     global _bot_app
     if _bot_app is None:
-        _bot_app = Application.builder().token(TELEGRAM_BOT_TOKEN).build()
+        # Создаем приложение без встроенного Updater (для совместимости с Python 3.14)
+        _bot_app = Application.builder().token(TELEGRAM_BOT_TOKEN).updater(None).build()
         _bot_app.add_handler(CommandHandler("start", start))
         _bot_app.add_handler(CommandHandler("help", help_command))
         _bot_app.add_handler(CommandHandler("setkey", setkey))
