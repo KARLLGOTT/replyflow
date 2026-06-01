@@ -5,7 +5,6 @@ import asyncpg
 from dotenv import load_dotenv
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, filters, CallbackQueryHandler
-from telegram.request import HTTPXRequest
 
 load_dotenv()
 
@@ -207,23 +206,7 @@ _bot_app = None
 async def get_bot_app():
     global _bot_app
     if _bot_app is None:
-        # === ПРОКСИ ДЛЯ ОБХОДА БЛОКИРОВОК ===
-        proxy_url = "https://telegram-proxy.fgturkiye.workers.dev"
-        
-        # Создаем кастомный клиент
-        http_client = httpx.AsyncClient(proxy=proxy_url, timeout=httpx.Timeout(30.0))
-        
-        # Передаем клиент через connection_pool_factory
-        request = HTTPXRequest(connection_pool_factory=lambda: http_client)
-        
-        # Создаем приложение с прокси
-        _bot_app = Application.builder()\
-            .token(TELEGRAM_BOT_TOKEN)\
-            .request(request)\
-            .updater(None)\
-            .build()
-        
-        # ... остальные обработчики (add_handler) ...
+        _bot_app = Application.builder().token(TELEGRAM_BOT_TOKEN).updater(None).build()
         _bot_app.add_handler(CommandHandler("start", start))
         _bot_app.add_handler(CommandHandler("help", help_command))
         _bot_app.add_handler(CommandHandler("setkey", setkey))
@@ -232,11 +215,13 @@ async def get_bot_app():
         _bot_app.add_handler(CommandHandler("myplan", myplan))
         _bot_app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, generate_response))
         _bot_app.add_handler(CallbackQueryHandler(button_callback))
-        
         await _bot_app.initialize()
         
         render_url = os.getenv("RENDER_EXTERNAL_URL")
-        webhook_url = f"{render_url}/webhook" if render_url else f"{API_URL}/webhook"
+        if render_url:
+            webhook_url = f"{render_url}/webhook"
+        else:
+            webhook_url = f"{API_URL}/webhook"
         
         await _bot_app.bot.set_webhook(webhook_url)
         print(f"[BOT] Webhook set to {webhook_url}")
