@@ -1927,7 +1927,6 @@ async def upload_knowledge_file(
 @app.on_event("startup")
 async def startup_event():
     init_db()
-    # Запускаем бота в фоне
     asyncio.create_task(start_bot_polling())
 
 async def start_bot_polling():
