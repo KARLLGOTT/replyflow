@@ -216,7 +216,7 @@ async def get_bot_app():
             proxy=proxy_url,
             timeout=httpx.Timeout(30.0, connect=30.0)
         )
-        request = HTTPXRequest(client=http_client)
+        request = HTTPXRequest(http_client=http_client)  # ← ИСПРАВЛЕНО: http_client, не client
         
         # Создаем приложение с прокси и без встроенного Updater
         _bot_app = Application.builder()\
