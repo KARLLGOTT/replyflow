@@ -224,4 +224,4 @@ async def get_bot_app():
 async def start_polling():
     app = await get_bot_app()
     print("[BOT] Starting polling...")
-    await app.start_polling()
+    await app.run_polling()
