@@ -125,3 +125,14 @@ def clear_cache_for_text(text: str) -> None:
         for lang in ["uk", "en"]:
             key = get_cache_key(text, plan, lang)
             redis_client.delete(key)
+
+def get_session(session_id: str) -> List[Dict[str, str]]:
+    """Получить историю сессии (для совместимости)"""
+    file_path = _get_file_path(session_id)
+    if not os.path.exists(file_path):
+        return []
+    try:
+        with open(file_path, 'r') as f:
+            return json.load(f)
+    except:
+        return []
