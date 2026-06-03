@@ -93,17 +93,21 @@ def get_session_stats(session_id: str) -> Dict[str, Any]:
     }
 
 # === Кэширование (оставляем как было) ===
-def get_cache_key(text: str, plan: str, language: str) -> str:
+def get_cache_key(text: str, plan: str, language: str, session_id: str = None) -> str:
     import hashlib
     normalized = ' '.join(text.lower().strip().split())
-    content = f"{normalized}:{plan}:{language}"
+    # Добавляем session_id в ключ, если он есть
+    if session_id:
+        content = f"{normalized}:{plan}:{language}:{session_id}"
+    else:
+        content = f"{normalized}:{plan}:{language}"
     hash_key = hashlib.md5(content.encode()).hexdigest()
     return f"cache:response:{hash_key}"
 
-def get_cached_response(text: str, plan: str, language: str) -> Optional[List[str]]:
+def get_cached_response(text: str, plan: str, language: str, session_id: str = None) -> Optional[List[str]]:
     if not redis_client:
         return None
-    key = get_cache_key(text, plan, language)
+    key = get_cache_key(text, plan, language, session_id)
     cached = redis_client.get(key)
     if cached:
         try:
@@ -112,10 +116,10 @@ def get_cached_response(text: str, plan: str, language: str) -> Optional[List[st
             return None
     return None
 
-def set_cached_response(text: str, plan: str, language: str, responses: List[str]) -> None:
+def set_cached_response(text: str, plan: str, language: str, responses: List[str], session_id: str = None) -> None:
     if not redis_client:
         return
-    key = get_cache_key(text, plan, language)
+    key = get_cache_key(text, plan, language, session_id)
     redis_client.setex(key, CACHE_TTL, json.dumps(responses))
 
 def clear_cache_for_text(text: str) -> None:
