@@ -51,7 +51,7 @@ from bot import get_bot_app
 
 # ===== Redis =====
 from app.utils.redis_client import (
-    get_session, add_to_memory, reset_memory, build_history_text,
+    add_to_memory, reset_memory, build_history_text,
     get_cached_response, set_cached_response
 )
 
