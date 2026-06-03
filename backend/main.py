@@ -1120,7 +1120,7 @@ async def generate(
         parts[2] = add_links_to_response(parts[2], search_results)
     
     # Сохраняем в кэш
-    set_cached_response(q.text, plan, language, parts)
+    cached_responses = get_cached_response(q.text, plan, language, session_id)
     
     add_to_memory(session_id, q.text, parts[0])
     
