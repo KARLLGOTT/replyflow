@@ -26,6 +26,7 @@ export default function Dashboard() {
   const [sessionId, setSessionId] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [clientState, setClientState] = useState(null);
+  const [sessionId, setSessionId] = useState(null);
   
   // Стриминг
   const [isStreaming, setIsStreaming] = useState(false);
@@ -111,6 +112,15 @@ export default function Dashboard() {
     setLoading(true);
     setErrorMessage("");
     setClientState(null);
+    let currentSessionId = sessionId;
+if (!currentSessionId) {
+  currentSessionId = localStorage.getItem("replyflow_session_id");
+  if (!currentSessionId) {
+    currentSessionId = "web_" + Date.now() + "_" + Math.random().toString(36).substr(2, 8);
+    localStorage.setItem("replyflow_session_id", currentSessionId);
+  }
+  setSessionId(currentSessionId);
+}
 
     try {
       const res = await authAPI.fetchWithAuth(`${API}/generate`, {
@@ -118,12 +128,12 @@ export default function Dashboard() {
         headers: { 
           "Content-Type": "application/json"
         },
-        body: JSON.stringify({ 
-          text, 
-          objection: note, 
-          session_id: sessionId,
-          selected_script: selectedScript !== "auto" ? selectedScript : null
-        }),
+       body: JSON.stringify({ 
+         text, 
+         objection: note, 
+         session_id: currentSessionId,
+         selected_script: selectedScript !== "auto" ? selectedScript : null
+       }),
       });
 
       if (!res.ok) throw new Error("Server error");
@@ -178,6 +188,15 @@ export default function Dashboard() {
     setStreamingText("");
     setErrorMessage("");
     setClientState(null);
+    let currentSessionId = sessionId;
+if (!currentSessionId) {
+  currentSessionId = localStorage.getItem("replyflow_session_id");
+  if (!currentSessionId) {
+    currentSessionId = "web_" + Date.now() + "_" + Math.random().toString(36).substr(2, 8);
+    localStorage.setItem("replyflow_session_id", currentSessionId);
+  }
+  setSessionId(currentSessionId);
+}
 
     try {
       const token = localStorage.getItem("accessToken");
@@ -191,7 +210,7 @@ export default function Dashboard() {
         body: JSON.stringify({ 
           text, 
           objection: note, 
-          session_id: sessionId,
+          session_id: currentSessionId,
           selected_script: selectedScript !== "auto" ? selectedScript : null
         }),
       });
@@ -259,6 +278,8 @@ export default function Dashboard() {
     setClientState(null);
     setStreamingText("");
     setIsStreaming(false);
+    localStorage.removeItem("replyflow_session_id");
+    setSessionId(null);
   };
 
   const copyToClipboard = (text, idx) => {
