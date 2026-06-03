@@ -26,7 +26,6 @@ export default function Dashboard() {
   const [sessionId, setSessionId] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
   const [clientState, setClientState] = useState(null);
-  const [sessionId, setSessionId] = useState(null);
   
   // Стриминг
   const [isStreaming, setIsStreaming] = useState(false);
@@ -69,8 +68,10 @@ export default function Dashboard() {
 
   // Загрузка при монтировании
   useEffect(() => {
-    loadScriptsList();
-  }, []);
+  window.addEventListener("beforeunload", () => {
+    localStorage.removeItem("replyflow_session_id");
+  });
+}, []);
 
   // Обновление при смене языка
   useEffect(() => {
@@ -279,7 +280,6 @@ if (!currentSessionId) {
     setStreamingText("");
     setIsStreaming(false);
     localStorage.removeItem("replyflow_session_id");
-    setSessionId(null);
   };
 
   const copyToClipboard = (text, idx) => {
