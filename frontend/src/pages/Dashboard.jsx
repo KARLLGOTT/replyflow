@@ -132,9 +132,9 @@ if (!currentSessionId) {
        body: JSON.stringify({ 
          text, 
          objection: note, 
-         session_id: currentSessionId,
+         session_id: sessionId || localStorage.getItem("replyflow_session_id") || Date.now().toString(),
          selected_script: selectedScript !== "auto" ? selectedScript : null
-       }),
+        }),
       });
 
       if (!res.ok) throw new Error("Server error");
