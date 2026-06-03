@@ -1122,6 +1122,8 @@ async def generate(
     # Сохраняем в кэш
     cached_responses = get_cached_response(q.text, plan, language, session_id)
     
+    set_cached_response(q.text, plan, language, parts)
+
     add_to_memory(session_id, q.text, parts[0])
     
     # Обновляем счётчики
