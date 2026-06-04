@@ -1931,6 +1931,8 @@ async def upload_knowledge_file(
 
 @app.on_event("startup")
 async def startup_event():
+    # Импортируем ВСЕ модели до init_db чтобы Base знал о них
+    from app import models  # noqa
     init_db()
     # Запускаем бота в фоне
     await get_bot_app()
