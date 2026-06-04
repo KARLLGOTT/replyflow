@@ -2,29 +2,25 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, declarative_base
 import os
 
-# Берём базу данных из переменной окружения (которую создал Render)
-# Если переменной нет — используем старый config (на случай локальной разработки)
 DATABASE_URL = os.environ.get("DATABASE_URL")
 
 if not DATABASE_URL:
-    # fallback для локальной разработки (чтобы код не сломался)
     from app.config import config
     DATABASE_URL = config.DATABASE_URL
     pool_size = getattr(config, "DATABASE_POOL_SIZE", 5)
     max_overflow = getattr(config, "DATABASE_MAX_OVERFLOW", 10)
     debug = getattr(config, "DEBUG", False)
 else:
-    # значения по умолчанию для Render
     pool_size = 5
     max_overflow = 10
     debug = False
 
-# Создаём engine
+# Принудительно подставляем драйвер psycopg2, заменяя протокол
+if DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
+
+# Создаём engine с явным указанием драйвера
 if "postgresql" in DATABASE_URL:
-    # Принудительно заменяем postgresql:// на postgresql+psycopg2://
-    if DATABASE_URL.startswith("postgresql://"):
-        DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://")
-    
     engine = create_engine(
         DATABASE_URL,
         pool_size=pool_size,
@@ -38,12 +34,7 @@ else:
         connect_args={"check_same_thread": False}
     )
 
-SessionLocal = sessionmaker(
-    autocommit=False,
-    autoflush=False,
-    bind=engine
-)
-
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
 def get_db():
