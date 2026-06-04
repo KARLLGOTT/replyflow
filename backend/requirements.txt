@@ -1,6 +1,6 @@
 fastapi>=0.110
 uvicorn>=0.27
-sqlalchemy==1.4.54
+sqlalchemy>=1.4.54,<2.0.0
 psycopg2-binary>=2.9.0
 redis>=5.0.0
 python-jose>=3.3
