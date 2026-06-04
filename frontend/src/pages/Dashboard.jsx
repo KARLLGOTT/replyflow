@@ -73,6 +73,10 @@ export default function Dashboard() {
   });
 }, []);
 
+useEffect(() => {
+  loadScriptsList();
+}, []);
+
   // Обновление при смене языка
   useEffect(() => {
     const handleLanguageChange = () => {
