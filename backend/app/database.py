@@ -32,13 +32,6 @@ if "postgresql" in DATABASE_URL:
         pool_pre_ping=True,
         echo=debug
     )
-    engine = create_engine(
-        DATABASE_URL,
-        pool_size=pool_size,
-        max_overflow=max_overflow,
-        pool_pre_ping=True,
-        echo=debug
-    )
 else:
     engine = create_engine(
         DATABASE_URL,
