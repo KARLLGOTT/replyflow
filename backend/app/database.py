@@ -15,8 +15,10 @@ else:
     max_overflow = 10
     debug = False
 
-# Принудительно подставляем драйвер psycopg2, заменяя протокол
-if DATABASE_URL.startswith("postgresql://"):
+# Исправляем устаревший префикс postgres:// и подставляем драйвер psycopg2
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg2://", 1)
+elif DATABASE_URL.startswith("postgresql://"):
     DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://", 1)
 
 # Создаём engine с явным указанием драйвера
