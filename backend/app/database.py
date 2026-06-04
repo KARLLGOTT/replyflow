@@ -21,6 +21,17 @@ else:
 
 # Создаём engine
 if "postgresql" in DATABASE_URL:
+    # Принудительно заменяем postgresql:// на postgresql+psycopg2://
+    if DATABASE_URL.startswith("postgresql://"):
+        DATABASE_URL = DATABASE_URL.replace("postgresql://", "postgresql+psycopg2://")
+    
+    engine = create_engine(
+        DATABASE_URL,
+        pool_size=pool_size,
+        max_overflow=max_overflow,
+        pool_pre_ping=True,
+        echo=debug
+    )
     engine = create_engine(
         DATABASE_URL,
         pool_size=pool_size,
