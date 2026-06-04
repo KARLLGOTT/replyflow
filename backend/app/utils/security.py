@@ -18,7 +18,7 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 if not SECRET_KEY:
     raise ValueError("SECRET_KEY environment variable is not set!")
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 15  # 15 минут для access token (безопаснее)
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24 * 7  # 7 дней (10080 минут)
 REFRESH_TOKEN_EXPIRE_DAYS = 30     # 30 дней для refresh token (remember me)
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto", bcrypt__rounds=12)
