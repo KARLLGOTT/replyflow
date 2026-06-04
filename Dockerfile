@@ -5,6 +5,8 @@ WORKDIR /app
 # Устанавливаем нужные библиотеки в контейнере
 RUN apt-get update && apt-get install -y libpq-dev gcc
 
+RUN pip install --no-cache-dir --force-reinstall psycopg2-binary==2.9.9
+
 # Копируем список зависимостей
 COPY backend/requirements.txt .
 
