@@ -723,6 +723,11 @@ async def root():
     return {"message": "OK"}
 
 
+@app.get("/health")
+async def health():
+    return {"status": "ok"}
+
+
 @app.get("/demo-remaining")
 async def get_demo_remaining(request: Request):
     client_ip = get_client_ip(request)
