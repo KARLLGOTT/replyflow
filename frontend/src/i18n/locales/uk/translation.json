@@ -245,7 +245,7 @@
     "subscription_cancelled": "Підписку скасовано",
     "profile_updated": "Профіль успішно оновлено!",
     "password_changed": "Пароль успішно змінено!",
-	"tab_knowledge": "База знаний"
+	"tab_knowledge": "База знань"
   },
   "knowledge": {
     "title": "Додати до бази знань",
