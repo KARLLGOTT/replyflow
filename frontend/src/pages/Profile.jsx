@@ -14,6 +14,10 @@ export default function Profile() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState({ type: "", text: "" });
   const [statsLoading, setStatsLoading] = useState(false);
+  // Batch processing state
+  const [batchTaskId, setBatchTaskId] = useState(null);
+  const [batchStatus, setBatchStatus] = useState(null);
+  const [batchProcessing, setBatchProcessing] = useState(false);
 
   const [profileForm, setProfileForm] = useState({
     full_name: "",
@@ -608,6 +612,56 @@ export default function Profile() {
     }
   };
 
+  // ===== BATCH PROCESSING =====
+  const handleBatchUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    setBatchProcessing(true);
+    setBatchStatus("Uploading...");
+    
+    const formData = new FormData();
+    formData.append("file", file);
+    
+    try {
+      const token = localStorage.getItem("accessToken");
+      const res = await fetch("https://replyflow-bot.onrender.com/batch/upload", {
+        method: "POST",
+        headers: { "Authorization": `Bearer ${token}` },
+        body: formData
+      });
+      
+      const data = await res.json();
+      setBatchTaskId(data.task_id);
+      setBatchStatus(`Processing: 0/${data.total}`);
+      
+      const interval = setInterval(async () => {
+        const statusRes = await fetch(`https://replyflow-bot.onrender.com/batch/status/${data.task_id}`, {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const statusData = await statusRes.json();
+        setBatchStatus(`Processing: ${statusData.processed}/${statusData.total}`);
+        
+        if (statusData.status === "completed") {
+          clearInterval(interval);
+          setBatchStatus("Completed! Click download.");
+          setBatchProcessing(false);
+        }
+      }, 2000);
+      
+    } catch (err) {
+      console.error(err);
+      setBatchStatus("Upload failed");
+      setBatchProcessing(false);
+    }
+  };
+
+  const downloadBatchResult = async () => {
+    if (!batchTaskId) return;
+    const token = localStorage.getItem("accessToken");
+    window.location.href = `https://replyflow-bot.onrender.com/batch/download/${batchTaskId}?token=${token}`;
+  };
+
   const handleLogout = () => {
     logout();
     navigate("/");
@@ -725,6 +779,16 @@ export default function Profile() {
             }`}
           >
             📚 {t("profile.tab_knowledge") || "Knowledge Base"}
+          </button>
+          <button
+            onClick={() => setActiveTab("batch")}
+            className={`px-6 py-3 rounded-xl font-bold transition-all duration-300 ${
+              activeTab === "batch"
+                ? "bg-white text-purple-600 shadow-lg"
+                : "bg-white/20 text-white hover:bg-white/30"
+            }`}
+          >
+            📊 Массовая обработка
           </button>
         </div>
 
@@ -1384,6 +1448,55 @@ export default function Profile() {
             )}
           </div>
         )}
+
+        {/* ===== BATCH PROCESSING TAB ===== */}
+        {activeTab === "batch" && (
+          <div className="bg-white/10 backdrop-blur-xl rounded-2xl p-8">
+            <h2 className="text-2xl font-bold text-white mb-6">📊 Массовая обработка Excel/CSV</h2>
+            
+            {user?.subscription_plan === "free" ? (
+              <div className="text-center py-8">
+                <p className="text-white/80 mb-4">Функция массовой обработки доступна на тарифах Starter и выше</p>
+                <button
+                  onClick={() => navigate("/pricing")}
+                  className="bg-gradient-to-r from-pink-500 to-purple-600 px-6 py-3 rounded-lg font-bold text-white hover:scale-105 transition"
+                >
+                  Upgrade
+                </button>
+              </div>
+            ) : (
+              <>
+                <p className="text-white/70 mb-4">
+                  Загрузите файл Excel или CSV. Первая колонка будет использована как вопросы.
+                  AI сгенерирует ответы для каждой строки.
+                </p>
+                
+                <label className="bg-purple-600 hover:bg-purple-700 text-white px-6 py-3 rounded-lg cursor-pointer inline-block">
+                  📂 Выбрать файл
+                  <input
+                    type="file"
+                    accept=".xlsx,.xls,.csv"
+                    onChange={handleBatchUpload}
+                    className="hidden"
+                    disabled={batchProcessing}
+                  />
+                </label>
+                
+                {batchStatus && (
+                  <div className="mt-4 text-white">
+                    {batchStatus}
+                    {batchStatus === "Completed! Click download." && (
+                      <button onClick={downloadBatchResult} className="ml-3 bg-green-600 px-4 py-2 rounded">
+                        ⬇️ Скачать результат
+                      </button>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+
       </div>
 
       <footer className="relative z-10 text-center py-8 text-white/60">
