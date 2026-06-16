@@ -76,6 +76,13 @@ from app.routes.knowledge import router as knowledge_router
 from app.routes.bot import router as bot_router
 from app.routes.password_reset import router as password_reset_router
 
+# ===== BATCH GENERATION =====
+import pandas as pd
+import json
+import uuid
+from io import BytesIO
+from fastapi.responses import StreamingResponse
+
 # ===== PROMPTS =====
 from app.prompts import build_generate_prompt, build_stream_prompt, build_improve_prompt
 
