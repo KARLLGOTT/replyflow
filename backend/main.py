@@ -1939,8 +1939,126 @@ async def upload_knowledge_file(
         "message": "File uploaded"
     }
 
-# ===== ЗАПУСК БОТА =====
+# ===== BATCH GENERATION (Excel импорт/экспорт) =====
 
+# Хранилище для задач массовой обработки (вместо Redis)
+batch_tasks = {}
+
+@app.post("/batch/upload")
+async def batch_upload(
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """Загружает Excel/CSV, запускает фоновую обработку, возвращает task_id"""
+    
+    if current_user.subscription_plan == "free":
+        raise HTTPException(status_code=403, detail="Batch processing available from Starter plan")
+    
+    contents = await file.read()
+    try:
+        df = pd.read_excel(BytesIO(contents))
+    except Exception:
+        try:
+            df = pd.read_csv(BytesIO(contents))
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Unsupported file format: {e}")
+    
+    if df.empty:
+        raise HTTPException(status_code=400, detail="File is empty")
+    
+    questions = df.iloc[:, 0].dropna().tolist()
+    if not questions:
+        raise HTTPException(status_code=400, detail="No valid questions found in first column")
+    
+    task_id = str(uuid.uuid4())
+    
+    batch_tasks[task_id] = {
+        "status": "processing",
+        "total": len(questions),
+        "processed": 0,
+        "results": [],
+        "questions": questions,
+        "user_id": current_user.id
+    }
+    
+    asyncio.create_task(_process_batch(task_id, questions, current_user))
+    
+    return {"task_id": task_id, "total": len(questions), "status": "processing"}
+
+
+async def _process_batch(task_id: str, questions: list, current_user: User):
+    import httpx
+    from app.database import SessionLocal
+    from app.models import User
+    
+    db = SessionLocal()
+    user = db.query(User).filter(User.id == current_user.id).first()
+    results = []
+    
+    for idx, question in enumerate(questions):
+        try:
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                resp = await client.post(
+                    f"http://localhost:{os.getenv('PORT', 8000)}/generate",
+                    json={"text": question, "session_id": f"batch_{task_id}_{idx}"},
+                    headers={"Authorization": f"Bearer {user.api_key}"}
+                )
+                if resp.status_code == 200:
+                    data = resp.json()
+                    answer = data.get("best_response", "No response")
+                else:
+                    answer = f"Error: {resp.status_code}"
+        except Exception as e:
+            answer = f"Exception: {str(e)[:100]}"
+        
+        results.append(answer)
+        batch_tasks[task_id]["processed"] = idx + 1
+        batch_tasks[task_id]["results"] = results
+    
+    batch_tasks[task_id]["status"] = "completed"
+    db.close()
+
+
+@app.get("/batch/status/{task_id}")
+async def batch_status(task_id: str, current_user: User = Depends(get_current_user)):
+    if task_id not in batch_tasks:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    task = batch_tasks[task_id]
+    return {
+        "status": task["status"],
+        "total": task["total"],
+        "processed": task["processed"]
+    }
+
+
+@app.get("/batch/download/{task_id}")
+async def batch_download(task_id: str, current_user: User = Depends(get_current_user)):
+    if task_id not in batch_tasks:
+        raise HTTPException(status_code=404, detail="Task not found")
+    
+    task = batch_tasks[task_id]
+    if task["status"] != "completed":
+        raise HTTPException(status_code=400, detail="Task not completed yet")
+    
+    df = pd.DataFrame({
+        "Вопрос": task["questions"],
+        "Ответ": task["results"]
+    })
+    
+    output = BytesIO()
+    with pd.ExcelWriter(output, engine='openpyxl') as writer:
+        df.to_excel(writer, index=False)
+    
+    output.seek(0)
+    return StreamingResponse(
+        output,
+        media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        headers={"Content-Disposition": f"attachment; filename=batch_{task_id}.xlsx"}
+    )    
+
+# ===== ЗАПУСК БОТА =====
 @app.on_event("startup")
 async def startup_event():
     # Импортируем ВСЕ модели до init_db чтобы Base знал о них
