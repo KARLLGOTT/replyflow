@@ -55,14 +55,14 @@ def select_model(models: list, subscription_plan: str, language: str) -> Optiona
     else:  # quality
         # Качественные: openrouter (deepseek), groq (llama-3.3-70b)
         def quality_score(m):
-    if "70b" in m.get("name", "") or "oss" in m.get("name", ""):
-        return 1  # Самая качественная
-    elif "deepseek" in m.get("name", ""):
-        return 2
-    elif "llama" in m.get("name", ""):
-        return 3
-    else:
-        return 4
+            if "70b" in m.get("name", "") or "oss" in m.get("name", ""):
+                return 1  # Самая качественная
+            elif "deepseek" in m.get("name", ""):
+                return 2
+            elif "llama" in m.get("name", ""):
+                return 3
+            else:
+                return 4
     
     # Исключаем модели, которые недавно падали
     current_time = time.time()
