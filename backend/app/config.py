@@ -38,7 +38,7 @@ class Config:
     
     # ===== AI МОДЕЛИ =====
     GROQ_API_KEY: Optional[str] = os.getenv("GROQ_API_KEY")
-    GROQ_MODELS: list = ["gpt-oss-20b", "llama-3.3-70b-versatile"]
+    GROQ_MODELS: list = ["openai/gpt-oss-20b", "llama-3.3-70b-versatile"]
     
     OPENROUTER_API_KEY: Optional[str] = os.getenv("OPENROUTER_API_KEY")
     OPENROUTER_BASE_URL: str = "https://openrouter.ai/api/v1"
