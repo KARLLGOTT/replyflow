@@ -1086,8 +1086,8 @@ async def generate(
     
     # ===== ПАРАМЕТРЫ ГЕНЕРАЦИИ =====
     if plan == "business":
-        temperature = 0.3
-        base_tokens = 600
+        temperature = 0.7
+        base_tokens = 900
     elif plan == "professional":
         temperature = 0.5
         base_tokens = 500
