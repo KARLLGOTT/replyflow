@@ -7,7 +7,7 @@ import Tooltip from "../components/Tooltip";
 import "../App.css";
 import { authAPI } from "../api/auth";
 
-const API = process.env.REACT_APP_API || "";
+const API = process.env.REACT_APP_API || "https://replyflow-bot.onrender.com";
 
 export default function Dashboard() {
   const { t } = useTranslation();
